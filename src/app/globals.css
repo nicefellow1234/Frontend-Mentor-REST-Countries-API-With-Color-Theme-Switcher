@@ -3,21 +3,37 @@
 @tailwind utilities;
 
 :root {
-  /* --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255; */
   --dark-blue: hsl(209, 23%, 22%);
   --very-dark-blue-bg: hsl(207, 26%, 17%);
   --very-dark-blue: hsl(200, 15%, 8%);
   --dark-gray: hsl(0, 0%, 52%);
   --very-light-gray: hsl(0, 0%, 98%);
   --white: hsl(0, 0%, 100%);
+  --black: hsl(0, 0%, 0%);
 }
 
-@media (prefers-color-scheme: dark) {
+.light-mode {
+  --header-bg-color: var(--white);
+  --search-input-color: var(--dark-gray);
+  --background-color: var(--very-light-gray);
+  --text-color: var(--very-dark-blue);
+  --elements-color: var(--very-dark-blue);
+  --input-color: var(--dark-gray);
+}
+
+.dark-mode {
+  --header-bg-color: var(--dark-blue);
+  --search-input-color: var(--white);
+  --background-color: var(--very-dark-blue-bg);
+  --text-color: var(--white);
+  --elements-color: var(--dark-blue);
+  --input-color: var(--dark-gray);
+}
+
+/* @media (prefers-color-scheme: dark) {
   :root {
     /* --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0; */
+    --background-end-rgb: 0, 0, 0; 
   }
-}
+} */

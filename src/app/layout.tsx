@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito_Sans } from "next/font/google";
 import "./globals.css";
+import { GlobalProvider } from "@/context/GlobalContext";
 
 const nunitoSans = Nunito_Sans({
   subsets: ["latin"],
@@ -19,7 +20,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={nunitoSans.className}>{children}</body>
+      <body className={nunitoSans.className}>
+        <GlobalProvider>
+          <div>{children}</div>
+        </GlobalProvider>
+      </body>
     </html>
   );
 }
