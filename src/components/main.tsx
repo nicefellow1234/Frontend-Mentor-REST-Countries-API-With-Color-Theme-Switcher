@@ -4,8 +4,9 @@ import {
   faMagnifyingGlass,
   faChevronDown
 } from "@fortawesome/free-solid-svg-icons";
+import { Country } from "@/types/Country";
 
-export default function Main({ data }) {
+export default function Main({ data }: { data: Country[] }) {
   return (
     <main>
       <div className="">
