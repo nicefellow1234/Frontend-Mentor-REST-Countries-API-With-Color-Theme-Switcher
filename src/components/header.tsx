@@ -20,7 +20,7 @@ export default function Header({ themeMode, setThemeMode }: HeaderProps) {
       <div className="w-full py-5">
         <div className="container mx-auto max-w-7xl px-3 md:px-10">
           <div className="flex items-center justify-between">
-            <div className="w-full text-[14px] md:text-[20px] font-extrabold">
+            <div className="w-full text-[14px] md:text-[25px] font-extrabold">
               Where in the world?
             </div>
             <div
@@ -32,7 +32,7 @@ export default function Header({ themeMode, setThemeMode }: HeaderProps) {
                   icon={themeMode == LIGHT_MODE ? faMoonRegular : faMoonSolid}
                 />
               </div>
-              <div className="w-max text-[13px] md:text-[15px] font-semibold">
+              <div className="w-max text-[13px] md:text-[17px] font-semibold">
                 {themeMode == LIGHT_MODE ? "Dark Mode" : "Light Mode"}
               </div>
             </div>
