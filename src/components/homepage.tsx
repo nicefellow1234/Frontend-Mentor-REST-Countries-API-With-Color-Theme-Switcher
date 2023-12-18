@@ -161,6 +161,7 @@ export default function Homepage({ data }: { data: Country[] }) {
                 </div>
                 {paginationInfo.pages.map((page) => (
                   <div
+                    key={page}
                     className={`p-2 border-l-[1.5px] w-[45px] md:w-[80px] text-center border-black border-opacity-30 ${
                       paginationInfo.currentPage == page
                         ? "bg-pink-400 text-white font-semibold"
