@@ -87,11 +87,11 @@ export default function CountryDetail({
                     <div className="mt-8 md:mt-14">
                       <span className="font-bold mr-3">Border Countries:</span>
                       {borderCountries.map((borderCountry) => (
-                        <Link href={"/viewCountry/" + borderCountry.alpha3Code}>
-                          <div
-                            key={borderCountry.alpha3Code}
-                            className="inline-block bg-[var(--header-bg-color)] shadow-[0px_0px_5px_0px_rgba(0,0,0,0.3)] p-2 px-4 rounded-md hover:cursor-pointer mr-2 mb-2"
-                          >
+                        <Link
+                          key={borderCountry.alpha3Code}
+                          href={"/viewCountry/" + borderCountry.alpha3Code}
+                        >
+                          <div className="inline-block bg-[var(--header-bg-color)] shadow-[0px_0px_5px_0px_rgba(0,0,0,0.3)] p-2 px-4 rounded-md hover:cursor-pointer mr-2 mb-2">
                             {borderCountry.name}
                           </div>
                         </Link>
