@@ -25,7 +25,7 @@ export default function CountryDetail({
         <div className="bg-[var(--background-color)] shadow-[inset_0_3px_5px_0_rgb(0_0_0_/_0.05)] p-3 md:min-h-screen">
           <div className="container mx-auto max-w-7xl px-3 md:px-10 p-5">
             <Link href={"/"}>
-              <div className="inline-block bg-[var(--header-bg-color)] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.3)] mt-2 md:mt-12 p-2 px-8 rounded-md hover:cursor-pointer">
+              <div className="inline-block bg-[var(--header-bg-color)] hover:shadow-[0px_0px_5px_5px_rgba(0,0,0,0.3)] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.3)] mt-2 md:mt-12 p-2 px-8 rounded-md hover:cursor-pointer">
                 <div className="flex items-center justify-center">
                   <div className="mr-4">
                     <FontAwesomeIcon icon={faArrowLeftLong} />
@@ -97,7 +97,7 @@ export default function CountryDetail({
                           key={borderCountry.alpha3Code}
                           href={"/viewCountry/" + borderCountry.alpha3Code}
                         >
-                          <div className="inline-block bg-[var(--header-bg-color)] shadow-[0px_0px_5px_0px_rgba(0,0,0,0.3)] p-2 px-4 rounded-md hover:cursor-pointer mr-2 mb-2">
+                          <div className="inline-block bg-[var(--header-bg-color)] hover:shadow-[0px_0px_5px_3px_rgba(0,0,0,0.3)] shadow-[0px_0px_5px_0px_rgba(0,0,0,0.3)] p-2 px-4 rounded-md hover:cursor-pointer mr-3 mb-2">
                             {borderCountry.name}
                           </div>
                         </Link>

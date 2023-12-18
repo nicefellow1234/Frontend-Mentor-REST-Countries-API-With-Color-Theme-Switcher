@@ -20,7 +20,7 @@ export default function Header({ themeMode, setThemeMode }: HeaderProps) {
       <div className="w-full">
         <div className="container mx-auto max-w-7xl px-3 md:px-10">
           <div className="flex items-center justify-between">
-            <div className="w-full text-[14px] md:text-[25px] font-extrabold py-5">
+            <div className="w-full text-[17px] md:text-[25px] font-extrabold py-5">
               Where in the world?
             </div>
             <div
