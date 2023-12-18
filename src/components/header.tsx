@@ -11,7 +11,7 @@ interface HeaderProps {
 
 export default function Header({ themeMode, setThemeMode }: HeaderProps) {
   const toggleTheme = () => {
-    const newMode = themeMode === "light-mode" ? "dark-mode" : "light-mode";
+    const newMode = themeMode === LIGHT_MODE ? DARK_MODE : LIGHT_MODE;
     setThemeMode(newMode);
   };
 

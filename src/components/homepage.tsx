@@ -7,17 +7,31 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Country } from "@/types/Country";
 import Header from "@/components/header";
-import { useContext, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { GlobalContext } from "@/context/GlobalContext";
 
-export default function Main({ data }: { data: Country[] }) {
+export default function Homepage({ data }: { data: Country[] }) {
   const { themeMode, setThemeMode } = useContext(GlobalContext);
+  const [countriesData, setCountriesData] = useState(data);
+  const regions: string[] = ["Africa", "America", "Asia", "Europe", "Oceania"];
+
+  const handleSearchInput = (e: ChangeEvent<EventTarget>) => {
+    let target = e.target as HTMLInputElement;
+    filterCountriesData("name", target.value);
+  };
+
+  const filterCountriesData = (field: string, value: string) => {
+    let filteredCountriesData = data.filter((c: Country) =>
+      c[field].toLowerCase().includes(value.toLowerCase())
+    );
+    setCountriesData(filteredCountriesData);
+  };
 
   return (
     <main>
       <div className={`${themeMode} text-[var(--text-color)]`}>
         <Header themeMode={themeMode} setThemeMode={setThemeMode} />
-        <div className="bg-[var(--background-color)] shadow-[inset_0_3px_5px_0_rgb(0_0_0_/_0.05)] p-3">
+        <div className="bg-[var(--background-color)] shadow-[inset_0_3px_5px_0_rgb(0_0_0_/_0.05)] p-3 min-h-screen">
           <div className="container mx-auto max-w-7xl px-3 md:px-10">
             <div className="mt-8 block md:flex items-center justify-between">
               <div className="bg-[var(--header-bg-color)] drop-shadow rounded-md flex items-center w-full md:w-1/3">
@@ -29,6 +43,7 @@ export default function Main({ data }: { data: Country[] }) {
                     className="p-4 placeholder:text-[var(--search-input-color)] text-[var(--text-color)] bg-[var(--header-bg-color)] w-full hover:outline-none focus:outline-none rounded-r-md"
                     type="text"
                     placeholder="Search for a country..."
+                    onInput={(e) => handleSearchInput(e)}
                   />
                 </div>
               </div>
@@ -42,16 +57,19 @@ export default function Main({ data }: { data: Country[] }) {
                   </div>
                 </div>
                 <div className="absolute hidden group-hover:flex w-full z-10 text-[15px] bg-[var(--header-bg-color)] drop-shadow rounded-md flex-col p-4 px-6 gap-y-1">
-                  <div>Africa</div>
-                  <div>America</div>
-                  <div>Asia</div>
-                  <div>Europe</div>
-                  <div>Oceania</div>
+                  {regions.map((region) => (
+                    <div
+                      key={region}
+                      onClick={() => filterCountriesData("region", region)}
+                    >
+                      {region}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-y-6 md:gap-14 rounded-md">
-              {data.map((country, key: number) => (
+              {countriesData.map((country, key: number) => (
                 <Link key={key} href={"/viewCountry/" + country.alpha3Code}>
                   <div className="bg-[var(--header-bg-color)] hover:cursor-pointer drop-shadow-md rounded-md">
                     <div>

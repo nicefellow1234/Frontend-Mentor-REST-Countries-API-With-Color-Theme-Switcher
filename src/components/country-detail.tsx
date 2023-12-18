@@ -1,11 +1,11 @@
 "use client";
+import { useContext } from "react";
+import Link from "next/link";
 import Header from "@/components/header";
 import { GlobalContext } from "@/context/GlobalContext";
 import { Country } from "@/types/Country";
 import { faArrowLeftLong } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Link from "next/link";
-import { useContext } from "react";
 
 export default function CountryDetail({
   country,
@@ -61,10 +61,12 @@ export default function CountryDetail({
                         <span className="font-bold mr-2">Sub Region:</span>
                         {country.subregion}
                       </div>
-                      <div className="mb-2">
-                        <span className="font-bold mr-2">Capital:</span>
-                        {country.capital}
-                      </div>
+                      {country.capital ? (
+                        <div className="mb-2">
+                          <span className="font-bold mr-2">Capital:</span>
+                          {country.capital}
+                        </div>
+                      ) : null}
                     </div>
                     <div>
                       <div className="mb-2">
@@ -73,10 +75,14 @@ export default function CountryDetail({
                         </span>
                         {country.topLevelDomain}
                       </div>
-                      <div className="mb-2">
-                        <span className="font-bold mr-2">Currencies:</span>
-                        {country.currencies.map(({ name }) => name).join(", ")}
-                      </div>
+                      {country.currencies?.length ? (
+                        <div className="mb-2">
+                          <span className="font-bold mr-2">Currencies:</span>
+                          {country.currencies
+                            .map(({ name }) => name)
+                            .join(", ")}
+                        </div>
+                      ) : null}
                       <div className="mb-2">
                         <span className="font-bold mr-2">Languages:</span>
                         {country.languages.map(({ name }) => name).join(", ")}

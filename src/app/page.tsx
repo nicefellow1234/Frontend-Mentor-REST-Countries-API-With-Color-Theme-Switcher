@@ -1,7 +1,7 @@
 "use server";
-import Main from "@/components/main";
+import Homepage from "@/components/homepage";
 
 export default async function Home() {
   const data = require("./data.json");
-  return <Main data={data} />;
+  return <Homepage data={data} />;
 }

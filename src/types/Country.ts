@@ -1,4 +1,5 @@
 export interface Country {
+  [key: string]: any;
   name: string;
   topLevelDomain: string[];
   alpha2Code: string;
@@ -20,7 +21,7 @@ export interface Country {
     svg: string;
     png: string;
   };
-  currencies: Array<{
+  currencies?: Array<{
     code: string;
     name: string;
     symbol: string;
