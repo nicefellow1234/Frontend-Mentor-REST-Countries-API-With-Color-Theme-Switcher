@@ -6,20 +6,60 @@ import {
   faChevronDown
 } from "@fortawesome/free-solid-svg-icons";
 import { Country } from "@/types/Country";
+import { Pagination } from "@/types/Pagination";
 import Header from "@/components/header";
 import { ChangeEvent, useContext, useState } from "react";
 import { GlobalContext } from "@/context/GlobalContext";
 
 export default function Homepage({ data }: { data: Country[] }) {
+  // Theme Mode
   const { themeMode, setThemeMode } = useContext(GlobalContext);
-  const [countriesData, setCountriesData] = useState(data);
+
+  // Data
   const regions: string[] = ["Africa", "America", "Asia", "Europe", "Oceania"];
 
+  // Pagination
+  const INITIAL_PAGE = 1;
+  const RECORDS_PER_PAGE = 16;
+  const paginateData = (pageNumber: number) => {
+    let startIndex = (pageNumber - 1) * RECORDS_PER_PAGE;
+    let paginatedData = data.slice(startIndex, startIndex + RECORDS_PER_PAGE);
+    return paginatedData;
+  };
+  const createPaginationInfo = (
+    currentPage: number = INITIAL_PAGE,
+    allCount: number = data.length
+  ): Pagination => {
+    let totalPages = Math.ceil(allCount / RECORDS_PER_PAGE);
+    let totalPagesArray = Array.from({ length: totalPages }, (_, i) => i + 1);
+    let pageIndex = totalPagesArray.indexOf(currentPage);
+    let pages =
+      pageIndex <= 1
+        ? totalPagesArray.slice(0, 5)
+        : pageIndex >= totalPages - 2
+        ? totalPagesArray.slice(-5)
+        : totalPagesArray.slice(Math.max(0, pageIndex - 2), pageIndex + 3);
+    return { currentPage, totalPages, pages };
+  };
+  const defaultPaginationInfo = createPaginationInfo();
+  const [paginationInfo, setPaginationInfo] = useState<Pagination>(
+    defaultPaginationInfo
+  );
+  const [countriesData, setCountriesData] = useState(
+    paginateData(defaultPaginationInfo.currentPage)
+  );
+  const handlePagination = (pageNumber: number) => {
+    let calculatedPaginationInfo = createPaginationInfo(pageNumber);
+    setPaginationInfo(calculatedPaginationInfo);
+    let paginatedData = paginateData(pageNumber);
+    setCountriesData(paginatedData);
+  };
+
+  // Data Filteration
   const handleSearchInput = (e: ChangeEvent<EventTarget>) => {
     let target = e.target as HTMLInputElement;
     filterCountriesData("name", target.value);
   };
-
   const filterCountriesData = (field: string, value: string) => {
     let filteredCountriesData = data.filter((c: Country) =>
       c[field].toLowerCase().includes(value.toLowerCase())
@@ -34,7 +74,7 @@ export default function Homepage({ data }: { data: Country[] }) {
         <div className="bg-[var(--background-color)] shadow-[inset_0_3px_5px_0_rgb(0_0_0_/_0.05)] p-3 min-h-screen">
           <div className="container mx-auto max-w-7xl px-3 md:px-10">
             <div className="mt-8 block md:flex items-center justify-between">
-              <div className="bg-[var(--header-bg-color)] drop-shadow rounded-md flex items-center w-full md:w-1/3">
+              <div className="bg-[var(--header-bg-color)] drop-shadow rounded-md flex items-center w-full md:w-1/3 hover:shadow-[0px_0px_5px_0px_rgba(0,0,0,0.3)]">
                 <div className="w-[18px] my-4 ml-8 mr-0 text-[var(--search-input-color)]">
                   <FontAwesomeIcon icon={faMagnifyingGlass} />
                 </div>
@@ -47,8 +87,8 @@ export default function Homepage({ data }: { data: Country[] }) {
                   />
                 </div>
               </div>
-              <div className="relative group hover:cursor-pointer mt-4 md:mt-0 w-1/2 md:w-auto">
-                <div className="bg-[var(--header-bg-color)] drop-shadow rounded-md flex items-center justify-between p-4 px-6 mb-1">
+              <div className="relative group hover:cursor-pointer mt-4 md:mt-0 w-1/2 md:w-auto group">
+                <div className="bg-[var(--header-bg-color)] drop-shadow rounded-md flex items-center justify-between p-4 px-6 mb-1 group-hover:shadow-[0px_0px_5px_0px_rgba(0,0,0,0.3)]">
                   <div className="text-[12px] md:text-[15px] font-medium mr-5">
                     Filter by Region
                   </div>
@@ -59,6 +99,7 @@ export default function Homepage({ data }: { data: Country[] }) {
                 <div className="absolute hidden group-hover:flex w-full z-10 text-[15px] bg-[var(--header-bg-color)] drop-shadow rounded-md flex-col p-4 px-6 gap-y-1">
                   {regions.map((region) => (
                     <div
+                      className="hover:font-bold"
                       key={region}
                       onClick={() => filterCountriesData("region", region)}
                     >
@@ -103,6 +144,47 @@ export default function Homepage({ data }: { data: Country[] }) {
                   </div>
                 </Link>
               ))}
+            </div>
+            <div className="px-3 md:px-0 mt-14 mb-6 flex justify-center items-center">
+              <div className="bg-[var(--header-bg-color)] flex hover:cursor-pointer rounded-md shadow-[0px_0px_5px_0px_rgba(0,0,0,0.3)]">
+                <div
+                  className="p-2 px-3 md:px-6 rounded-l-md hover:bg-pink-400 hover:text-white hover:font-semibold"
+                  onClick={() =>
+                    handlePagination(
+                      paginationInfo.currentPage == 1
+                        ? paginationInfo.currentPage
+                        : paginationInfo.currentPage - 1
+                    )
+                  }
+                >
+                  Prev
+                </div>
+                {paginationInfo.pages.map((page) => (
+                  <div
+                    className={`p-2 border-l-[1.5px] w-[45px] md:w-[80px] text-center border-black border-opacity-30 ${
+                      paginationInfo.currentPage == page
+                        ? "bg-pink-400 text-white font-semibold"
+                        : "hover:bg-pink-400 hover:text-white hover:font-bold"
+                    }`}
+                    onClick={() => handlePagination(page)}
+                  >
+                    {page}
+                  </div>
+                ))}
+
+                <div
+                  className="p-2 px-3 md:px-6 rounded-r-md border-l-[1.5px] border-black border-opacity-30 hover:bg-pink-400 hover:text-white hover:font-semibold"
+                  onClick={() =>
+                    handlePagination(
+                      paginationInfo.currentPage == paginationInfo.totalPages
+                        ? paginationInfo.totalPages
+                        : paginationInfo.currentPage + 1
+                    )
+                  }
+                >
+                  Next
+                </div>
+              </div>
             </div>
           </div>
         </div>
