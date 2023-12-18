@@ -10,20 +10,31 @@ import { Pagination } from "@/types/Pagination";
 import Header from "@/components/header";
 import { ChangeEvent, useContext, useState } from "react";
 import { GlobalContext } from "@/context/GlobalContext";
+import { DataFilters } from "@/types/DataFilters";
 
 export default function Homepage({ data }: { data: Country[] }) {
   // Theme Mode
   const { themeMode, setThemeMode } = useContext(GlobalContext);
 
   // Data
+  const NAME_FILTER_FIELD: keyof DataFilters = "name";
+  const REGION_FILTER_FIELD: keyof DataFilters = "region";
   const regions: string[] = ["Africa", "America", "Asia", "Europe", "Oceania"];
+  const defaultDataFilters: DataFilters = {
+    name: "",
+    region: ""
+  };
+  const [dataFilters, setDataFilters] = useState(defaultDataFilters);
 
   // Pagination
   const INITIAL_PAGE = 1;
   const RECORDS_PER_PAGE = 16;
-  const paginateData = (pageNumber: number) => {
+  const paginateData = (pageNumber: number, allCountries: Country[] = data) => {
     let startIndex = (pageNumber - 1) * RECORDS_PER_PAGE;
-    let paginatedData = data.slice(startIndex, startIndex + RECORDS_PER_PAGE);
+    let paginatedData = allCountries.slice(
+      startIndex,
+      startIndex + RECORDS_PER_PAGE
+    );
     return paginatedData;
   };
   const createPaginationInfo = (
@@ -49,22 +60,63 @@ export default function Homepage({ data }: { data: Country[] }) {
     paginateData(defaultPaginationInfo.currentPage)
   );
   const handlePagination = (pageNumber: number) => {
-    let calculatedPaginationInfo = createPaginationInfo(pageNumber);
+    let calculatedPaginationInfo = createPaginationInfo(
+      pageNumber,
+      filteredCountriesData.length ? filteredCountriesData.length : data.length
+    );
     setPaginationInfo(calculatedPaginationInfo);
-    let paginatedData = paginateData(pageNumber);
+    let paginatedData = paginateData(
+      pageNumber,
+      filteredCountriesData.length ? filteredCountriesData : data
+    );
     setCountriesData(paginatedData);
   };
 
   // Data Filteration
-  const handleSearchInput = (e: ChangeEvent<EventTarget>) => {
-    let target = e.target as HTMLInputElement;
-    filterCountriesData("name", target.value);
-  };
-  const filterCountriesData = (field: string, value: string) => {
-    let filteredCountriesData = data.filter((c: Country) =>
-      c[field].toLowerCase().includes(value.toLowerCase())
+  const [filteredCountriesData, setFilteredCountriesData] = useState<Country[]>(
+    []
+  );
+  const filterCountriesData = (updatedDataFilters: DataFilters) => {
+    var updatedCountriesData: Country[] = data;
+    for (const filter in dataFilters) {
+      updatedCountriesData = updatedCountriesData.filter((c: Country) =>
+        c[filter as keyof DataFilters]
+          .toLowerCase()
+          .includes(
+            updatedDataFilters[filter as keyof DataFilters].toLowerCase()
+          )
+      );
+    }
+    setFilteredCountriesData(updatedCountriesData);
+    let paginatedData = paginateData(INITIAL_PAGE, updatedCountriesData);
+    setCountriesData(paginatedData);
+    let calculatedPaginationInfo = createPaginationInfo(
+      INITIAL_PAGE,
+      updatedCountriesData.length
     );
-    setCountriesData(filteredCountriesData);
+    setPaginationInfo(calculatedPaginationInfo);
+  };
+  const updateDataFilter = (field: keyof DataFilters, value: string) => {
+    let updatedDataFilters = { ...dataFilters };
+    if (
+      (field == REGION_FILTER_FIELD && value != dataFilters[field]) ||
+      field == NAME_FILTER_FIELD
+    ) {
+      updatedDataFilters[field] = value;
+    } else {
+      updatedDataFilters[field] = "";
+    }
+    setDataFilters(updatedDataFilters);
+    return updatedDataFilters;
+  };
+  const handleNameFilter = (e: ChangeEvent<EventTarget>) => {
+    let target = e.target as HTMLInputElement;
+    let updatedDataFilters = updateDataFilter(NAME_FILTER_FIELD, target.value);
+    filterCountriesData(updatedDataFilters);
+  };
+  const handleRegionFilter = (region: string) => {
+    let updatedDataFilters = updateDataFilter(REGION_FILTER_FIELD, region);
+    filterCountriesData(updatedDataFilters);
   };
 
   return (
@@ -83,7 +135,7 @@ export default function Homepage({ data }: { data: Country[] }) {
                     className="p-4 placeholder:text-[var(--search-input-color)] text-[var(--text-color)] bg-[var(--header-bg-color)] w-full hover:outline-none focus:outline-none rounded-r-md"
                     type="text"
                     placeholder="Search for a country..."
-                    onInput={(e) => handleSearchInput(e)}
+                    onInput={(e) => handleNameFilter(e)}
                   />
                 </div>
               </div>
@@ -99,9 +151,11 @@ export default function Homepage({ data }: { data: Country[] }) {
                 <div className="absolute hidden group-hover:flex w-full z-10 text-[15px] bg-[var(--header-bg-color)] drop-shadow rounded-md flex-col p-4 px-6 gap-y-1">
                   {regions.map((region) => (
                     <div
-                      className="hover:font-bold"
+                      className={`hover:font-bold ${
+                        dataFilters.region == region ? "font-bold" : ""
+                      }`}
                       key={region}
-                      onClick={() => filterCountriesData("region", region)}
+                      onClick={() => handleRegionFilter(region)}
                     >
                       {region}
                     </div>
@@ -145,48 +199,50 @@ export default function Homepage({ data }: { data: Country[] }) {
                 </Link>
               ))}
             </div>
-            <div className="px-3 md:px-0 mt-14 mb-6 flex justify-center items-center">
-              <div className="bg-[var(--header-bg-color)] flex hover:cursor-pointer rounded-md shadow-[0px_0px_5px_0px_rgba(0,0,0,0.3)]">
-                <div
-                  className="p-2 px-3 md:px-6 rounded-l-md hover:bg-pink-400 hover:text-white hover:font-semibold"
-                  onClick={() =>
-                    handlePagination(
-                      paginationInfo.currentPage == 1
-                        ? paginationInfo.currentPage
-                        : paginationInfo.currentPage - 1
-                    )
-                  }
-                >
-                  Prev
-                </div>
-                {paginationInfo.pages.map((page) => (
+            {paginationInfo.totalPages > 1 ? (
+              <div className="px-3 md:px-0 mt-14 mb-6 flex justify-center items-center">
+                <div className="bg-[var(--header-bg-color)] flex hover:cursor-pointer rounded-md shadow-[0px_0px_5px_0px_rgba(0,0,0,0.3)]">
                   <div
-                    key={page}
-                    className={`p-2 border-l-[1.5px] w-[45px] md:w-[80px] text-center border-black border-opacity-30 ${
-                      paginationInfo.currentPage == page
-                        ? "bg-pink-400 text-white font-semibold"
-                        : "hover:bg-pink-400 hover:text-white hover:font-bold"
-                    }`}
-                    onClick={() => handlePagination(page)}
+                    className="p-2 px-3 md:px-6 rounded-l-md hover:bg-pink-400 hover:text-white hover:font-semibold"
+                    onClick={() =>
+                      handlePagination(
+                        paginationInfo.currentPage == 1
+                          ? paginationInfo.currentPage
+                          : paginationInfo.currentPage - 1
+                      )
+                    }
                   >
-                    {page}
+                    Prev
                   </div>
-                ))}
+                  {paginationInfo.pages.map((page) => (
+                    <div
+                      key={page}
+                      className={`p-2 border-l-[1.5px] w-[45px] md:w-[80px] text-center border-black border-opacity-30 ${
+                        paginationInfo.currentPage == page
+                          ? "bg-pink-400 text-white font-semibold"
+                          : "hover:bg-pink-400 hover:text-white hover:font-bold"
+                      }`}
+                      onClick={() => handlePagination(page)}
+                    >
+                      {page}
+                    </div>
+                  ))}
 
-                <div
-                  className="p-2 px-3 md:px-6 rounded-r-md border-l-[1.5px] border-black border-opacity-30 hover:bg-pink-400 hover:text-white hover:font-semibold"
-                  onClick={() =>
-                    handlePagination(
-                      paginationInfo.currentPage == paginationInfo.totalPages
-                        ? paginationInfo.totalPages
-                        : paginationInfo.currentPage + 1
-                    )
-                  }
-                >
-                  Next
+                  <div
+                    className="p-2 px-3 md:px-6 rounded-r-md border-l-[1.5px] border-black border-opacity-30 hover:bg-pink-400 hover:text-white hover:font-semibold"
+                    onClick={() =>
+                      handlePagination(
+                        paginationInfo.currentPage == paginationInfo.totalPages
+                          ? paginationInfo.totalPages
+                          : paginationInfo.currentPage + 1
+                      )
+                    }
+                  >
+                    Next
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </div>
