@@ -22,7 +22,7 @@ export default function CountryDetail({
     <main>
       <div className={`${themeMode} text-[var(--text-color)]`}>
         <Header themeMode={themeMode} setThemeMode={setThemeMode} />
-        <div className="bg-[var(--background-color)] shadow-[inset_0_3px_5px_0_rgb(0_0_0_/_0.05)] p-3 md:h-screen">
+        <div className="bg-[var(--background-color)] shadow-[inset_0_3px_5px_0_rgb(0_0_0_/_0.05)] p-3 md:min-h-screen">
           <div className="container mx-auto max-w-7xl px-3 md:px-10 p-5">
             <Link href={"/"}>
               <div className="inline-block bg-[var(--header-bg-color)] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.3)] mt-2 md:mt-12 p-2 px-8 rounded-md hover:cursor-pointer">
